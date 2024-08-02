@@ -1,0 +1,77 @@
+<!-- HTML Structure -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Endurance Edge</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <section class="header">
+        <nav>
+            <a href="index.html"><img src="images/logo.png"></a>
+            <div class="nav-links">
+                <ul>
+                    <li><a href="">HOME</a></li>
+                    <li><a href="">ABOUT</a></li>
+                    <li><a href="">HEALTH PLAN</a></li>
+                    <li><a href="">CONTACT</a></li>
+                    <li><a href="">CHATBOT</a></li>
+                </ul>
+            </div>
+        </nav>
+    </section>
+    
+    <section class="chatbot-container">
+        <h1>Endurance Edge</h1>
+        <p>a place all about you</p>
+        
+        <section class="about-us">
+            <!-- About Us Content -->
+        </section>
+        
+        <section class="chatbot">
+            <input id="user-input" type="text" placeholder="Ask me anything...">
+            <button id="send-btn">Send</button>
+            <div id="chat-log"></div>
+        </section>
+    </section>
+    
+    <script>
+        const chatbotContainer = document.querySelector('.chatbot-container');
+        const userInput = document.querySelector('#user-input');
+        const sendBtn = document.querySelector('#send-btn');
+        const chatLog = document.querySelector('#chat-log');
+        
+        sendBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const userMessage = userInput.value.trim();
+            if (userMessage !== '') {
+                fetch(`https://api.wit.ai/message?v=20220526&q=${userMessage}`, {
+                    headers: {
+                        Authorization: `Bearer IW7MG3RCKPJ6CCUEOTQFJXTN3HWLOWW5`
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const responseText = data.entities.intent[0].value;
+                    generateResponse(responseText);
+                    userInput.value = '';
+                })
+                .catch(error => console.error(error));
+            }
+        });
+        
+        function generateResponse(responseText) {
+            const chatLogMessage = document.createElement('div');
+            chatLogMessage.className = 'chat-log-message';
+            chatLogMessage.innerHTML = `
+                <span>${responseText}</span>
+                <span class="chat-log-message-time">${new Date().toLocaleTimeString()}</span>
+            `;
+            chatLog.appendChild(chatLogMessage);
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+    </script>
+</body>
+</html>
